@@ -14,14 +14,13 @@ fn astronaut_job_score(job: &AstronautJob) -> u32 {
 }
 
 fn job_score(candidate: &Candidate) -> u32 {
-    match candidate.secondary_job {
-        None => astronaut_job_score(&candidate.primary_job).pow(2) % 577,
+    (match candidate.secondary_job {
+        None => astronaut_job_score(&candidate.primary_job).pow(2),
         _ => {
             astronaut_job_score(&candidate.primary_job)
                 * astronaut_job_score(candidate.secondary_job.as_ref().unwrap())
-                % 577
         }
-    }
+    }) % 577
 }
 
 fn candidate_score(candidate: &Candidate) -> u32 {
@@ -89,21 +88,20 @@ fn test_candidate_score() {
 
 #[test]
 fn test_candidate_ordering() {
-    let mut candidates = Vec::<Candidate>::new();
-
-    candidates.push(Candidate {
-        primary_job: AstronautJob::RoverOp,
-        secondary_job: Some(AstronautJob::Biologist),
-        health: 20,
-        age: 29,
-    });
-
-    candidates.push(Candidate {
-        primary_job: AstronautJob::Mechanic,
-        secondary_job: None,
-        health: 19,
-        age: 34,
-    });
+    let mut candidates = vec![
+        Candidate {
+            primary_job: AstronautJob::RoverOp,
+            secondary_job: Some(AstronautJob::Biologist),
+            health: 20,
+            age: 29,
+        },
+        Candidate {
+            primary_job: AstronautJob::Mechanic,
+            secondary_job: None,
+            health: 19,
+            age: 34,
+        },
+    ];
 
     assert_eq!(candidate_score(&candidates[0]), 3248);
     assert_eq!(candidate_score(&candidates[1]), 2225);
